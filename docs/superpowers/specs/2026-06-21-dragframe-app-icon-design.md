@@ -28,11 +28,12 @@
 
 ## 工程接入
 
-1. 保存 GPT Image 2 生成的 1024×1024 主图到项目资源目录。
-2. 建立 `Assets.xcassets/AppIcon.appiconset`。
-3. 从主图生成 macOS 所需的 16、32、128、256、512 和 1024 像素 PNG 文件。
-4. 填写 `Contents.json`，设置 Xcode 的 `ASSETCATALOG_COMPILER_APPICON_NAME` 为 `AppIcon`。
-5. 重新生成 Xcode 工程、构建 Release 版本并安装到 `/Applications/DragFrame.app`。
+1. 先生成预览图，只在对话中展示，不修改工程或已安装应用。
+2. 用户明确确认预览图后，保存 1024×1024 主图到项目资源目录。
+3. 建立 `Assets.xcassets/AppIcon.appiconset`。
+4. 从主图生成 macOS 所需的 16、32、128、256、512 和 1024 像素 PNG 文件。
+5. 填写 `Contents.json`，设置 Xcode 的 `ASSETCATALOG_COMPILER_APPICON_NAME` 为 `AppIcon`。
+6. 重新生成 Xcode 工程、构建 Release 版本并安装到 `/Applications/DragFrame.app`。
 
 ## 验收标准
 
@@ -40,4 +41,5 @@
 - 1024×1024 主图清晰，无文字、乱码、水印或异常边缘。
 - 16×16 和 32×32 尺寸仍能识别渐变选区框与鼠标指针。
 - 图标视觉与应用实际的透明渐变框功能一致。
+- 未获得用户对预览图的明确确认前，不替换任何应用图标资源。
 - Xcode 构建成功，已有单元测试继续通过。
