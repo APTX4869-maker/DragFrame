@@ -23,6 +23,7 @@
 		E272D4DA1C7054C3AD23341E /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C33AD28E02A68278F78408 /* SettingsWindowController.swift */; };
 		E6E13EED05EAA991CACCEC40 /* GradientBorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56364BA9A97073F1C3560528 /* GradientBorderView.swift */; };
 		EC36C1582EE7F98843345C44 /* DragStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47540103E23586C6AE1C2B2 /* DragStateMachine.swift */; };
+		F990A113E5A101502194BEF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F15B3E814098F7994D7F6606 /* Assets.xcassets */; };
 		F991D28DE9CFCF35D4E7A013 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C56663AEDF3D959AE6676 /* AppDelegate.swift */; };
 		FB9DD42129DD0D30945B8BBC /* GlobalEventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4443A98233C221D6F09E3662 /* GlobalEventMonitor.swift */; };
 		FF4A95F873CD87C36BC0DCD7 /* DragFrameCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 26DE4FC2B5FD9D3924FB583B /* DragFrameCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -88,6 +89,7 @@
 		C47540103E23586C6AE1C2B2 /* DragStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragStateMachine.swift; sourceTree = "<group>"; };
 		DB352A91232AFECFDC70845A /* OverlayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindowController.swift; sourceTree = "<group>"; };
 		EE5B97138DEE20EA183A6F3B /* CoordinateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateConverter.swift; sourceTree = "<group>"; };
+		F15B3E814098F7994D7F6606 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FE7B4AAB38FB40A754285992 /* ShortcutSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,6 +127,7 @@
 			children = (
 				FB2FF957251B310113EA4D32 /* App */,
 				20C4D22231870F6C986FE97A /* Overlay */,
+				6855591322EEE089DA3BD358 /* Resources */,
 				E2B7002D3213BB37A82FDD3D /* Services */,
 				FBCCF3B474478479B60DC60B /* UI */,
 			);
@@ -137,6 +140,14 @@
 				87FC0DCA7DD12E255E39D24E /* DragFrameCoreTests.swift */,
 			);
 			path = DragFrameCoreTests;
+			sourceTree = "<group>";
+		};
+		6855591322EEE089DA3BD358 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F15B3E814098F7994D7F6606 /* Assets.xcassets */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		DA25C77A1D7C88C4B10CFBD9 /* Products */ = {
@@ -244,6 +255,7 @@
 			buildConfigurationList = 2B78228C1EE6833F4BCB3146 /* Build configuration list for PBXNativeTarget "DragFrame" */;
 			buildPhases = (
 				E4E1D84A6DE5D6C3CF0DED75 /* Sources */,
+				666D403017C999D694C924F4 /* Resources */,
 				D62729C63DAE1238F138CF72 /* Frameworks */,
 				8DD5F94DB1CDCD10B58576C2 /* Embed Frameworks */,
 			);
@@ -299,6 +311,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		666D403017C999D694C924F4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F990A113E5A101502194BEF5 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		06AC5D7A902DC74BF0E518F7 /* Sources */ = {
