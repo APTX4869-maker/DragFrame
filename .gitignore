@@ -3,7 +3,7 @@
 DerivedData/
 .swiftpm/
 .superpowers/
+dist/
 xcuserdata/
 *.xcuserstate
 *.xcresult
-
