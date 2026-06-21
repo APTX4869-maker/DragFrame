@@ -18,11 +18,14 @@ struct SettingsView: View {
             GroupBox("触发快捷键") {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 14) {
-                        modifierToggle("Control ⌃", modifier: .control)
                         modifierToggle("Option ⌥", modifier: .option)
                         modifierToggle("Shift ⇧", modifier: .shift)
                         modifierToggle("Command ⌘", modifier: .command)
                     }
+
+                    Text("Control 不可用，因为 macOS 会把 Control-click 解释为右键。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
                     HStack {
                         Text("当前组合")
@@ -84,4 +87,3 @@ struct SettingsView: View {
         .toggleStyle(.checkbox)
     }
 }
-

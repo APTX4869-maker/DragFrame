@@ -16,7 +16,12 @@ public final class ShortcutSettings: ObservableObject {
 
         if let stored = defaults.object(forKey: Self.storageKey) as? NSNumber {
             let candidate = ModifierShortcut(rawValue: stored.uintValue)
-            shortcut = candidate.isValid ? candidate : .default
+            if candidate.contains(.control) || !candidate.isValid {
+                shortcut = .default
+                defaults.set(NSNumber(value: ModifierShortcut.default.rawValue), forKey: Self.storageKey)
+            } else {
+                shortcut = candidate
+            }
         } else {
             shortcut = .default
         }
@@ -24,6 +29,11 @@ public final class ShortcutSettings: ObservableObject {
 
     @discardableResult
     public func set(_ modifier: ModifierShortcut, enabled: Bool) -> Bool {
+        guard modifier != .control else {
+            validationMessage = "Control-click 会触发 macOS 右键菜单，不能用于拖拽快捷键。"
+            return false
+        }
+
         var candidate = shortcut
 
         if enabled {
@@ -56,4 +66,3 @@ public final class ShortcutSettings: ObservableObject {
         onChange?(value)
     }
 }
-

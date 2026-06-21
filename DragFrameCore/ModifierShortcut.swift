@@ -13,8 +13,8 @@ public struct ModifierShortcut: OptionSet, Hashable, Sendable {
     public static let control = ModifierShortcut(rawValue: 1 << 2)
     public static let shift = ModifierShortcut(rawValue: 1 << 3)
 
-    public static let supported: ModifierShortcut = [.command, .option, .control, .shift]
-    public static let `default`: ModifierShortcut = [.control, .option]
+    public static let supported: ModifierShortcut = [.command, .option, .shift]
+    public static let `default`: ModifierShortcut = [.shift, .option]
 
     public init(cgEventFlags flags: CGEventFlags) {
         var shortcut: ModifierShortcut = []
@@ -41,11 +41,9 @@ public struct ModifierShortcut: OptionSet, Hashable, Sendable {
 
     private var orderedModifiers: [(value: ModifierShortcut, symbol: String, name: String)] {
         [
-            (.control, "⌃", "Control"),
-            (.option, "⌥", "Option"),
             (.shift, "⇧", "Shift"),
+            (.option, "⌥", "Option"),
             (.command, "⌘", "Command")
         ].filter { contains($0.value) }
     }
 }
-

@@ -6,7 +6,6 @@ final class GradientBorderView: NSView {
 
     private let gradientLayer = CAGradientLayer()
     private let borderMaskLayer = CAShapeLayer()
-    private let shadowLayer = CAShapeLayer()
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -27,10 +26,9 @@ final class GradientBorderView: NSView {
         CATransaction.setDisableActions(true)
 
         gradientLayer.frame = bounds
-        shadowLayer.frame = bounds
         borderMaskLayer.frame = bounds
 
-        let lineWidth: CGFloat = 3
+        let lineWidth: CGFloat = 6
         let rect = bounds.insetBy(
             dx: Self.contentInset + lineWidth / 2,
             dy: Self.contentInset + lineWidth / 2
@@ -45,9 +43,6 @@ final class GradientBorderView: NSView {
 
         borderMaskLayer.path = path
         borderMaskLayer.lineWidth = lineWidth
-        shadowLayer.path = path
-        shadowLayer.lineWidth = lineWidth
-        shadowLayer.shadowPath = path
 
         CATransaction.commit()
     }
@@ -57,15 +52,7 @@ final class GradientBorderView: NSView {
         layer?.backgroundColor = NSColor.clear.cgColor
         layer?.masksToBounds = false
 
-        shadowLayer.fillColor = NSColor.clear.cgColor
-        shadowLayer.strokeColor = NSColor.systemPurple.withAlphaComponent(0.38).cgColor
-        shadowLayer.shadowColor = NSColor.systemPurple.cgColor
-        shadowLayer.shadowOpacity = 0.24
-        shadowLayer.shadowRadius = 8
-        shadowLayer.shadowOffset = .zero
-        shadowLayer.masksToBounds = false
-
-        borderMaskLayer.fillColor = NSColor.clear.cgColor
+        borderMaskLayer.fillColor = nil
         borderMaskLayer.strokeColor = NSColor.white.cgColor
         borderMaskLayer.lineCap = .round
         borderMaskLayer.lineJoin = .round
@@ -80,8 +67,6 @@ final class GradientBorderView: NSView {
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
         gradientLayer.mask = borderMaskLayer
 
-        layer?.addSublayer(shadowLayer)
         layer?.addSublayer(gradientLayer)
     }
 }
-

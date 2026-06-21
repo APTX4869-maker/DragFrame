@@ -64,7 +64,7 @@ final class StatusItemController: NSObject {
         enabledItem.isEnabled = true
         menu.addItem(enabledItem)
 
-        shortcutItem.title = "当前快捷键：⌃⌥"
+        shortcutItem.title = "当前快捷键：⇧⌥"
         shortcutItem.isEnabled = false
         menu.addItem(shortcutItem)
 
@@ -115,4 +115,3 @@ final class StatusItemController: NSObject {
         onQuit?()
     }
 }
-

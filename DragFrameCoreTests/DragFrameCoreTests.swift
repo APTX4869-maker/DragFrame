@@ -4,8 +4,8 @@ import XCTest
 
 final class ModifierShortcutTests: XCTestCase {
     func testDefaultShortcutDisplay() {
-        XCTAssertEqual(ModifierShortcut.default.displayString, "⌃⌥")
-        XCTAssertEqual(ModifierShortcut.default.spokenDescription, "Control + Option")
+        XCTAssertEqual(ModifierShortcut.default.displayString, "⇧⌥")
+        XCTAssertEqual(ModifierShortcut.default.spokenDescription, "Shift + Option")
     }
 
     func testCGEventFlagsConversion() {
@@ -15,6 +15,7 @@ final class ModifierShortcutTests: XCTestCase {
 
     func testValidityRejectsEmptyAndUnknownBits() {
         XCTAssertFalse(ModifierShortcut().isValid)
+        XCTAssertFalse(ModifierShortcut.control.isValid)
         XCTAssertFalse(ModifierShortcut(rawValue: 1 << 10).isValid)
         XCTAssertTrue(ModifierShortcut.command.isValid)
     }
@@ -33,7 +34,7 @@ final class DragStateMachineTests: XCTestCase {
 
     func testMovementThresholdAndRelease() {
         var machine = DragStateMachine()
-        let modifiers: ModifierShortcut = [.control, .option]
+        let modifiers: ModifierShortcut = [.shift, .option]
 
         XCTAssertEqual(machine.mouseDown(at: CGPoint(x: 10, y: 10), modifiers: modifiers), .none)
         XCTAssertEqual(machine.mouseDragged(to: CGPoint(x: 12, y: 11), modifiers: modifiers), .none)
@@ -47,7 +48,7 @@ final class DragStateMachineTests: XCTestCase {
 
     func testExtraModifierIsAllowed() {
         var machine = DragStateMachine()
-        let modifiers: ModifierShortcut = [.control, .option, .shift]
+        let modifiers: ModifierShortcut = [.shift, .option, .command]
 
         _ = machine.mouseDown(at: .zero, modifiers: modifiers)
         XCTAssertEqual(
@@ -58,7 +59,7 @@ final class DragStateMachineTests: XCTestCase {
 
     func testReleasingRequiredModifierCancelsVisibleDrag() {
         var machine = DragStateMachine()
-        let modifiers: ModifierShortcut = [.control, .option]
+        let modifiers: ModifierShortcut = [.shift, .option]
 
         _ = machine.mouseDown(at: .zero, modifiers: modifiers)
         _ = machine.mouseDragged(to: CGPoint(x: 10, y: 10), modifiers: modifiers)
@@ -112,10 +113,40 @@ final class ShortcutSettingsTests: XCTestCase {
 
     func testPersistsValidShortcut() {
         let settings = ShortcutSettings(defaults: defaults)
-        XCTAssertTrue(settings.set(.shift, enabled: true))
+        XCTAssertTrue(settings.set(.command, enabled: true))
 
         let reloaded = ShortcutSettings(defaults: defaults)
-        XCTAssertEqual(reloaded.shortcut, [.control, .option, .shift])
+        XCTAssertEqual(reloaded.shortcut, [.shift, .option, .command])
+    }
+
+    func testMigratesAnyShortcutContainingControl() {
+        let legacy: ModifierShortcut = [.control, .option]
+        defaults.set(NSNumber(value: legacy.rawValue), forKey: ShortcutSettings.storageKey)
+
+        let settings = ShortcutSettings(defaults: defaults)
+
+        XCTAssertEqual(settings.shortcut, .default)
+        XCTAssertEqual(
+            (defaults.object(forKey: ShortcutSettings.storageKey) as? NSNumber)?.uintValue,
+            ModifierShortcut.default.rawValue
+        )
+    }
+
+    func testPreservesSupportedCustomShortcut() {
+        let custom: ModifierShortcut = [.command, .option]
+        defaults.set(NSNumber(value: custom.rawValue), forKey: ShortcutSettings.storageKey)
+
+        let settings = ShortcutSettings(defaults: defaults)
+
+        XCTAssertEqual(settings.shortcut, custom)
+    }
+
+    func testRejectsControlBinding() {
+        let settings = ShortcutSettings(defaults: defaults)
+
+        XCTAssertFalse(settings.set(.control, enabled: true))
+        XCTAssertEqual(settings.shortcut, .default)
+        XCTAssertNotNil(settings.validationMessage)
     }
 
     func testRejectsRemovingLastModifier() {
@@ -129,7 +160,7 @@ final class ShortcutSettingsTests: XCTestCase {
 
     func testResetUsesDefault() {
         let settings = ShortcutSettings(defaults: defaults)
-        settings.set(.shift, enabled: true)
+        settings.set(.command, enabled: true)
         settings.resetToDefault()
 
         XCTAssertEqual(settings.shortcut, .default)
