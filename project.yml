@@ -1,0 +1,61 @@
+name: DragFrame
+options:
+  minimumXcodeGenVersion: 2.44.0
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    CLANG_ENABLE_MODULES: YES
+    CODE_SIGN_STYLE: Automatic
+targets:
+  DragFrameCore:
+    type: framework
+    platform: macOS
+    sources:
+      - path: DragFrameCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vincent.dragframe.core
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+  DragFrame:
+    type: application
+    platform: macOS
+    sources:
+      - path: DragFrame
+        excludes:
+          - Resources/Info.plist
+    dependencies:
+      - target: DragFrameCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vincent.dragframe
+        PRODUCT_NAME: DragFrame
+        INFOPLIST_FILE: DragFrame/Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_HARDENED_RUNTIME: YES
+  DragFrameCoreTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: DragFrameCoreTests
+    dependencies:
+      - target: DragFrameCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vincent.dragframe.core-tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  DragFrame:
+    build:
+      targets:
+        DragFrame: all
+        DragFrameCore: all
+        DragFrameCoreTests: [test]
+    test:
+      targets:
+        - DragFrameCoreTests
