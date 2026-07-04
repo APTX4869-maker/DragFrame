@@ -3,6 +3,7 @@ import DragFrameCore
 
 final class DragCoordinator: GlobalEventMonitorDelegate {
     var onMonitorStartFailure: (() -> Void)?
+    var onMonitorStarted: (() -> Void)?
 
     private let monitor: GlobalEventMonitor
     private let overlay: OverlayWindowController
@@ -24,7 +25,9 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
         isEnabled = enabled
 
         if enabled && permissionGranted {
-            if !monitor.start() {
+            if monitor.start() {
+                onMonitorStarted?()
+            } else {
                 onMonitorStartFailure?()
             }
         } else {

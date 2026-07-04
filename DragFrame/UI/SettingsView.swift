@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var shortcutSettings: ShortcutSettings
     @ObservedObject var permission: InputMonitoringPermission
+    @ObservedObject var runtimeStatus: RuntimeStatus
     let openPrivacySettings: () -> Void
 
     var body: some View {
@@ -47,6 +48,30 @@ struct SettingsView: View {
                 .padding(8)
             }
 
+            if let message = runtimeStatus.monitorErrorMessage {
+                GroupBox("需要处理") {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                            .font(.title3)
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("DragFrame 还不能在所有应用中生效")
+                                .fontWeight(.medium)
+                            Text(message)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Button("打开输入监控设置") {
+                                openPrivacySettings()
+                            }
+                            .padding(.top, 2)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .padding(8)
+                }
+            }
+
             GroupBox("系统权限") {
                 HStack(spacing: 12) {
                     Image(systemName: permission.isAuthorized ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
@@ -73,7 +98,7 @@ struct SettingsView: View {
             Spacer(minLength: 0)
         }
         .padding(24)
-        .frame(width: 520, height: 330)
+        .frame(width: 560, height: 460)
     }
 
     private func modifierToggle(_ title: String, modifier: ModifierShortcut) -> some View {

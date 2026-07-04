@@ -30,7 +30,10 @@ final class StatusItemController: NSObject {
         privacySettingsItem.isHidden = permissionGranted
 
         let symbolName = permissionGranted ? "rectangle.dashed" : "exclamationmark.rectangle"
-        statusItem.button?.image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "DragFrame")
+        statusItem.button?.image = statusImage(
+            named: symbolName,
+            accessibilityDescription: "DragFrame"
+        )
         statusItem.button?.toolTip = permissionGranted
             ? "DragFrame 已就绪"
             : "DragFrame 需要输入监控权限"
@@ -40,17 +43,24 @@ final class StatusItemController: NSObject {
         permissionMessageItem.title = "无法启动输入监听"
         permissionMessageItem.isHidden = false
         privacySettingsItem.isHidden = false
-        statusItem.button?.image = NSImage(
-            systemSymbolName: "exclamationmark.rectangle",
+        statusItem.button?.image = statusImage(
+            named: "exclamationmark.rectangle",
             accessibilityDescription: "DragFrame 监听失败"
         )
     }
 
     private func configureStatusItem() {
-        statusItem.button?.image = NSImage(
-            systemSymbolName: "rectangle.dashed",
+        statusItem.button?.image = statusImage(
+            named: "rectangle.dashed",
             accessibilityDescription: "DragFrame"
         )
+    }
+
+    private func statusImage(named symbolName: String, accessibilityDescription: String) -> NSImage? {
+        let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: accessibilityDescription)
+        image?.isTemplate = true
+        image?.size = NSSize(width: 18, height: 18)
+        return image
     }
 
     private func configureMenu() {

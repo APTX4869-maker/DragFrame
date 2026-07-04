@@ -6,11 +6,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     init(
         shortcutSettings: ShortcutSettings,
         permission: InputMonitoringPermission,
+        runtimeStatus: RuntimeStatus,
         openPrivacySettings: @escaping () -> Void
     ) {
         let rootView = SettingsView(
             shortcutSettings: shortcutSettings,
             permission: permission,
+            runtimeStatus: runtimeStatus,
             openPrivacySettings: openPrivacySettings
         )
         let hostingController = NSHostingController(rootView: rootView)
@@ -35,4 +37,3 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 }
-
