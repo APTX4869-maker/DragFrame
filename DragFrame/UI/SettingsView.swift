@@ -8,6 +8,7 @@ struct SettingsView: View {
     @ObservedObject var runtimeStatus: RuntimeStatus
     @ObservedObject var launchAtLogin: LaunchAtLoginController
     @ObservedObject var overlayStyleSettings: OverlayStyleSettings
+    let openWelcomeGuide: () -> Void
     let openPrivacySettings: () -> Void
 
     var body: some View {
@@ -205,11 +206,18 @@ struct SettingsView: View {
 
             Spacer(minLength: 0)
 
-            if !permission.isAuthorized {
-                Button("打开系统设置") {
-                    openPrivacySettings()
+            HStack(spacing: 8) {
+                Button("打开欢迎引导") {
+                    openWelcomeGuide()
+                }
+
+                if !permission.isAuthorized {
+                    Button("打开系统设置") {
+                        openPrivacySettings()
+                    }
                 }
             }
+            .controlSize(.small)
         }
         .padding(8)
     }

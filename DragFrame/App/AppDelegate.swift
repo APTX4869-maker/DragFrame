@@ -19,12 +19,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         runtimeStatus: runtimeStatus,
         launchAtLogin: launchAtLogin,
         overlayStyleSettings: overlayStyleSettings,
+        openWelcomeGuide: { [weak self] in self?.presentWelcomeGuide(markAsShown: false) },
+        openPrivacySettings: { [weak self] in self?.openPrivacySettings() }
+    )
+    private lazy var welcomeWindowController = WelcomeWindowController(
+        permission: permission,
+        shortcutSettings: shortcutSettings,
         openPrivacySettings: { [weak self] in self?.openPrivacySettings() }
     )
 
     private var permissionTimer: Timer?
     private var didPresentRecoveryWindow = false
-    private let explanationKey = "dragFrame.didExplainInputMonitoring"
+    private let welcomeGuideKey = "dragFrame.didShowWelcomeGuide"
     private let monitorStartFailureMessage = "macOS 拒绝了 DragFrame 的全局输入监听。通常是旧授权记录绑定了旧签名。请在输入监控中关闭再重新打开 DragFrame，然后重启应用。"
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -35,7 +41,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         refreshPermissionState()
         launchAtLogin.refresh()
         startPermissionTimer()
-        if !presentPermissionExplanationIfNeeded() {
+        if !presentWelcomeGuideIfNeeded() {
             presentRecoveryWindowIfNeeded()
         }
     }
@@ -108,36 +114,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         RunLoop.main.add(timer, forMode: .common)
     }
 
+    private func presentWelcomeGuide(markAsShown: Bool) {
+        if markAsShown {
+            UserDefaults.standard.set(true, forKey: welcomeGuideKey)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+            self?.welcomeWindowController.present()
+        }
+    }
+
     @discardableResult
-    private func presentPermissionExplanationIfNeeded() -> Bool {
+    private func presentWelcomeGuideIfNeeded() -> Bool {
         guard !permission.isAuthorized else { return false }
-        guard !UserDefaults.standard.bool(forKey: explanationKey) else {
+        guard !UserDefaults.standard.bool(forKey: welcomeGuideKey) else {
             presentRecoveryWindowIfNeeded()
             return true
         }
 
-        UserDefaults.standard.set(true, forKey: explanationKey)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-            guard let self else { return }
-
-            NSApp.activate(ignoringOtherApps: true)
-            let alert = NSAlert()
-            alert.messageText = "允许 DragFrame 监听拖拽"
-            alert.informativeText = "DragFrame 会读取修饰键和鼠标拖动，用来显示渐变方框；仅在快捷键框选期间接管这一段左键拖拽，避免底层内容被选中，不会保存输入内容。"
-            alert.alertStyle = .informational
-            alert.addButton(withTitle: "继续授权")
-            alert.addButton(withTitle: "稍后")
-
-            if alert.runModal() == .alertFirstButtonReturn {
-                if !self.permission.requestAccess() {
-                    self.permission.openSystemSettings()
-                }
-                self.refreshPermissionState()
-                self.presentRecoveryWindowIfNeeded()
-            }
-        }
-
+        presentWelcomeGuide(markAsShown: true)
         return true
     }
 

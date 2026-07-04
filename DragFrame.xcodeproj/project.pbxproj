@@ -11,6 +11,7 @@
 		158AE2FBB4754F2315347902 /* ShortcutSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE7B4AAB38FB40A754285992 /* ShortcutSettings.swift */; };
 		2A70A9149E80B9DAEE10A091 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF989467C9437CEE6189689 /* SettingsView.swift */; };
 		45E756337D1A844F100D1A86 /* OverlayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB352A91232AFECFDC70845A /* OverlayWindowController.swift */; };
+		4DA8D60184CC479D4827AF67 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AD9A9E3923545F76AE44EE /* WelcomeView.swift */; };
 		66C160965507041DBE62FD07 /* RuntimeStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A45E893CCF3A735C092B388 /* RuntimeStatus.swift */; };
 		8511BBAFF96005734ED2E51E /* ModifierShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */; };
 		894AC34332A89E3264E54DA6 /* DragCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED2DAEC17EDD2F0F6D99778 /* DragCoordinator.swift */; };
@@ -18,6 +19,7 @@
 		9B0BCE219FEA44DD4E295C71 /* InputMonitoringPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7635C157B7953A1FDE6A8D /* InputMonitoringPermission.swift */; };
 		9C0AC91EF7DF7540F376F2E5 /* ApplicationMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BBBC9F0EB5C79F9EEEB25E /* ApplicationMain.swift */; };
 		9CA305D32FA1A1B7B229F2A6 /* LaunchAtLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CFEA0EB3EEF32F5FE1141 /* LaunchAtLoginController.swift */; };
+		A9B0360F2EAA6D828BD62D82 /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60D0587B8150BE668B1493D /* WelcomeWindowController.swift */; };
 		B28565A2EDD0DCEFC3FDD446 /* OverlayStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFE5D7AD4DA294FB56128B2 /* OverlayStyle.swift */; };
 		B31DEB4E7DB793596765AD7B /* DragFrameCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC0DCA7DD12E255E39D24E /* DragFrameCoreTests.swift */; };
 		B820BC9959A421E8BC0DE4DA /* CoordinateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5B97138DEE20EA183A6F3B /* CoordinateConverter.swift */; };
@@ -82,6 +84,7 @@
 		16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifierShortcut.swift; sourceTree = "<group>"; };
 		170A16F50094E45332CDA436 /* DragCaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCaptureState.swift; sourceTree = "<group>"; };
 		1A45E893CCF3A735C092B388 /* RuntimeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeStatus.swift; sourceTree = "<group>"; };
+		25AD9A9E3923545F76AE44EE /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		26DE4FC2B5FD9D3924FB583B /* DragFrameCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DragFrameCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C427946F48B93B86CFED0E /* StatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
 		36C33AD28E02A68278F78408 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
@@ -92,6 +95,7 @@
 		87FC0DCA7DD12E255E39D24E /* DragFrameCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragFrameCoreTests.swift; sourceTree = "<group>"; };
 		8DFE5D7AD4DA294FB56128B2 /* OverlayStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayStyle.swift; sourceTree = "<group>"; };
 		9DF989467C9437CEE6189689 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A60D0587B8150BE668B1493D /* WelcomeWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowController.swift; sourceTree = "<group>"; };
 		A63C56663AEDF3D959AE6676 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AED2DAEC17EDD2F0F6D99778 /* DragCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCoordinator.swift; sourceTree = "<group>"; };
 		C47540103E23586C6AE1C2B2 /* DragStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragStateMachine.swift; sourceTree = "<group>"; };
@@ -218,6 +222,8 @@
 				9DF989467C9437CEE6189689 /* SettingsView.swift */,
 				36C33AD28E02A68278F78408 /* SettingsWindowController.swift */,
 				33C427946F48B93B86CFED0E /* StatusItemController.swift */,
+				25AD9A9E3923545F76AE44EE /* WelcomeView.swift */,
+				A60D0587B8150BE668B1493D /* WelcomeWindowController.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -373,6 +379,8 @@
 				2A70A9149E80B9DAEE10A091 /* SettingsView.swift in Sources */,
 				E272D4DA1C7054C3AD23341E /* SettingsWindowController.swift in Sources */,
 				9A688C774CB0A4329EDD4A79 /* StatusItemController.swift in Sources */,
+				4DA8D60184CC479D4827AF67 /* WelcomeView.swift in Sources */,
+				A9B0360F2EAA6D828BD62D82 /* WelcomeWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

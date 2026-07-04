@@ -2,34 +2,31 @@ import AppKit
 import DragFrameCore
 import SwiftUI
 
-final class SettingsWindowController: NSWindowController, NSWindowDelegate {
+final class WelcomeWindowController: NSWindowController, NSWindowDelegate {
     init(
-        shortcutSettings: ShortcutSettings,
         permission: InputMonitoringPermission,
-        runtimeStatus: RuntimeStatus,
-        launchAtLogin: LaunchAtLoginController,
-        overlayStyleSettings: OverlayStyleSettings,
-        openWelcomeGuide: @escaping () -> Void,
+        shortcutSettings: ShortcutSettings,
         openPrivacySettings: @escaping () -> Void
     ) {
-        let rootView = SettingsView(
-            shortcutSettings: shortcutSettings,
+        let dismissProxy = WelcomeDismissProxy()
+        let rootView = WelcomeView(
             permission: permission,
-            runtimeStatus: runtimeStatus,
-            launchAtLogin: launchAtLogin,
-            overlayStyleSettings: overlayStyleSettings,
-            openWelcomeGuide: openWelcomeGuide,
-            openPrivacySettings: openPrivacySettings
+            shortcutSettings: shortcutSettings,
+            openPrivacySettings: openPrivacySettings,
+            dismiss: {
+                dismissProxy.dismiss()
+            }
         )
         let hostingController = NSHostingController(rootView: rootView)
         let window = NSWindow(contentViewController: hostingController)
-        window.title = "DragFrame 设置"
+        window.title = "欢迎使用 DragFrame"
         window.styleMask = [.titled, .closable, .miniaturizable]
         window.isReleasedWhenClosed = false
         window.toolbarStyle = .unifiedCompact
         window.center()
 
         super.init(window: window)
+        dismissProxy.window = window
         window.delegate = self
     }
 
@@ -42,5 +39,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         showWindow(nil)
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+private final class WelcomeDismissProxy {
+    weak var window: NSWindow?
+
+    func dismiss() {
+        window?.close()
     }
 }
