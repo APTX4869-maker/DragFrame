@@ -82,6 +82,66 @@ final class DragStateMachineTests: XCTestCase {
     }
 }
 
+final class DragCaptureStateTests: XCTestCase {
+    func testDoesNotCaptureWhenRequiredModifiersAreMissing() {
+        var state = DragCaptureState()
+
+        XCTAssertFalse(
+            state.mouseDown(modifiers: .option, requiredModifiers: [.shift, .option])
+        )
+        XCTAssertFalse(state.isCapturingMouseSequence)
+        XCTAssertFalse(state.mouseDragged())
+        XCTAssertFalse(state.mouseUp())
+    }
+
+    func testCapturesWholeMouseSequenceWhenShortcutIsHeldAtMouseDown() {
+        var state = DragCaptureState()
+        let modifiers: ModifierShortcut = [.shift, .option]
+
+        XCTAssertTrue(
+            state.mouseDown(modifiers: modifiers, requiredModifiers: [.shift, .option])
+        )
+        XCTAssertTrue(state.isCapturingMouseSequence)
+        XCTAssertTrue(state.mouseDragged())
+        XCTAssertTrue(state.mouseUp())
+        XCTAssertFalse(state.isCapturingMouseSequence)
+    }
+
+    func testExtraModifierStillCapturesSequence() {
+        var state = DragCaptureState()
+        let modifiers: ModifierShortcut = [.shift, .option, .command]
+
+        XCTAssertTrue(
+            state.mouseDown(modifiers: modifiers, requiredModifiers: [.shift, .option])
+        )
+        XCTAssertTrue(state.mouseDragged())
+    }
+
+    func testInvalidRequiredShortcutNeverCaptures() {
+        var state = DragCaptureState()
+
+        XCTAssertFalse(
+            state.mouseDown(modifiers: .option, requiredModifiers: [])
+        )
+        XCTAssertFalse(
+            state.mouseDown(modifiers: [.control, .option], requiredModifiers: [.control, .option])
+        )
+    }
+
+    func testCancelEndsCapturedSequence() {
+        var state = DragCaptureState()
+
+        XCTAssertTrue(
+            state.mouseDown(modifiers: [.shift, .option], requiredModifiers: [.shift, .option])
+        )
+        state.cancel()
+
+        XCTAssertFalse(state.isCapturingMouseSequence)
+        XCTAssertFalse(state.mouseDragged())
+        XCTAssertFalse(state.mouseUp())
+    }
+}
+
 final class CoordinateConverterTests: XCTestCase {
     func testQuartzToAppKitConversion() {
         XCTAssertEqual(

@@ -8,6 +8,7 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
     private let monitor: GlobalEventMonitor
     private let overlay: OverlayWindowController
     private var stateMachine: DragStateMachine
+    private var captureState = DragCaptureState()
     private(set) var isEnabled = true
 
     init(
@@ -32,6 +33,7 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
             }
         } else {
             monitor.stop()
+            captureState.cancel()
             apply(stateMachine.cancel())
         }
     }
@@ -41,29 +43,39 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
     }
 
     func updateShortcut(_ shortcut: ModifierShortcut) {
+        captureState.cancel()
         apply(stateMachine.cancel())
         stateMachine.requiredModifiers = shortcut
     }
 
-    func globalEventMonitor(_ monitor: GlobalEventMonitor, received event: MonitoredInputEvent) {
-        guard isEnabled else { return }
+    func globalEventMonitor(_ monitor: GlobalEventMonitor, received event: MonitoredInputEvent) -> Bool {
+        guard isEnabled else { return false }
 
         switch event {
         case let .leftMouseDown(point, modifiers):
+            let shouldSuppress = captureState.mouseDown(
+                modifiers: modifiers,
+                requiredModifiers: stateMachine.requiredModifiers
+            )
             apply(stateMachine.mouseDown(at: appKitPoint(from: point), modifiers: modifiers))
+            return shouldSuppress
 
         case let .leftMouseDragged(point, modifiers):
             apply(stateMachine.mouseDragged(to: appKitPoint(from: point), modifiers: modifiers))
+            return captureState.mouseDragged()
 
         case .leftMouseUp:
             apply(stateMachine.mouseUp())
+            return captureState.mouseUp()
 
         case let .flagsChanged(modifiers):
             apply(stateMachine.flagsChanged(to: modifiers))
+            return false
         }
     }
 
     func globalEventMonitorWasDisabled(_ monitor: GlobalEventMonitor) {
+        captureState.cancel()
         apply(stateMachine.cancel())
     }
 

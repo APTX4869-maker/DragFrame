@@ -22,6 +22,7 @@
 		BAE37F79D7ECDD4A19B66F99 /* DragFrameCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 26DE4FC2B5FD9D3924FB583B /* DragFrameCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFAFEF7FB77A649D6592A404 /* DragFrameCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26DE4FC2B5FD9D3924FB583B /* DragFrameCore.framework */; };
 		E272D4DA1C7054C3AD23341E /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C33AD28E02A68278F78408 /* SettingsWindowController.swift */; };
+		E61F53411EAE5FB678F095AD /* DragCaptureState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170A16F50094E45332CDA436 /* DragCaptureState.swift */; };
 		E6E13EED05EAA991CACCEC40 /* GradientBorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56364BA9A97073F1C3560528 /* GradientBorderView.swift */; };
 		EC36C1582EE7F98843345C44 /* DragStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47540103E23586C6AE1C2B2 /* DragStateMachine.swift */; };
 		F990A113E5A101502194BEF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F15B3E814098F7994D7F6606 /* Assets.xcassets */; };
@@ -76,6 +77,7 @@
 		04BB6B0A5AC55B9782C1A282 /* DragFrame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DragFrame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C7635C157B7953A1FDE6A8D /* InputMonitoringPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputMonitoringPermission.swift; sourceTree = "<group>"; };
 		16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifierShortcut.swift; sourceTree = "<group>"; };
+		170A16F50094E45332CDA436 /* DragCaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCaptureState.swift; sourceTree = "<group>"; };
 		1A45E893CCF3A735C092B388 /* RuntimeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeStatus.swift; sourceTree = "<group>"; };
 		26DE4FC2B5FD9D3924FB583B /* DragFrameCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DragFrameCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C427946F48B93B86CFED0E /* StatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				EE5B97138DEE20EA183A6F3B /* CoordinateConverter.swift */,
+				170A16F50094E45332CDA436 /* DragCaptureState.swift */,
 				C47540103E23586C6AE1C2B2 /* DragStateMachine.swift */,
 				16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */,
 				FE7B4AAB38FB40A754285992 /* ShortcutSettings.swift */,
@@ -332,6 +335,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B820BC9959A421E8BC0DE4DA /* CoordinateConverter.swift in Sources */,
+				E61F53411EAE5FB678F095AD /* DragCaptureState.swift in Sources */,
 				EC36C1582EE7F98843345C44 /* DragStateMachine.swift in Sources */,
 				8511BBAFF96005734ED2E51E /* ModifierShortcut.swift in Sources */,
 				158AE2FBB4754F2315347902 /* ShortcutSettings.swift in Sources */,

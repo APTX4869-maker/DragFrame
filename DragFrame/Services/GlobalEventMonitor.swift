@@ -3,7 +3,7 @@ import DragFrameCore
 import Foundation
 
 protocol GlobalEventMonitorDelegate: AnyObject {
-    func globalEventMonitor(_ monitor: GlobalEventMonitor, received event: MonitoredInputEvent)
+    func globalEventMonitor(_ monitor: GlobalEventMonitor, received event: MonitoredInputEvent) -> Bool
     func globalEventMonitorWasDisabled(_ monitor: GlobalEventMonitor)
 }
 
@@ -44,7 +44,7 @@ final class GlobalEventMonitor {
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
             place: .tailAppendEventTap,
-            options: .listenOnly,
+            options: .defaultTap,
             eventsOfInterest: eventMask,
             callback: globalEventTapCallback,
             userInfo: userInfo
@@ -73,34 +73,37 @@ final class GlobalEventMonitor {
         eventTap = nil
     }
 
-    fileprivate func receive(type: CGEventType, event: CGEvent) {
+    fileprivate func receive(type: CGEventType, event: CGEvent) -> Bool {
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
             if let eventTap {
                 CGEvent.tapEnable(tap: eventTap, enable: true)
             }
             delegate?.globalEventMonitorWasDisabled(self)
-            return
+            return false
         }
 
         let modifiers = ModifierShortcut(cgEventFlags: event.flags)
 
         switch type {
         case .leftMouseDown:
-            delegate?.globalEventMonitor(
+            return delegate?.globalEventMonitor(
                 self,
                 received: .leftMouseDown(point: event.location, modifiers: modifiers)
-            )
+            ) ?? false
         case .leftMouseDragged:
-            delegate?.globalEventMonitor(
+            return delegate?.globalEventMonitor(
                 self,
                 received: .leftMouseDragged(point: event.location, modifiers: modifiers)
-            )
+            ) ?? false
         case .leftMouseUp:
-            delegate?.globalEventMonitor(self, received: .leftMouseUp)
+            return delegate?.globalEventMonitor(self, received: .leftMouseUp) ?? false
         case .flagsChanged:
-            delegate?.globalEventMonitor(self, received: .flagsChanged(modifiers: modifiers))
+            return delegate?.globalEventMonitor(
+                self,
+                received: .flagsChanged(modifiers: modifiers)
+            ) ?? false
         default:
-            break
+            return false
         }
     }
 
@@ -120,7 +123,6 @@ private func globalEventTapCallback(
     }
 
     let monitor = Unmanaged<GlobalEventMonitor>.fromOpaque(userInfo).takeUnretainedValue()
-    monitor.receive(type: type, event: event)
-    return Unmanaged.passUnretained(event)
+    let shouldSuppressEvent = monitor.receive(type: type, event: event)
+    return shouldSuppressEvent ? nil : Unmanaged.passUnretained(event)
 }
-
