@@ -61,6 +61,7 @@ DragFrameCore/
   CoordinateConverter.swift
   DragCaptureState.swift
   DragStateMachine.swift
+  MonitorRecoveryState.swift
   ModifierShortcut.swift
   ShortcutSettings.swift
 
@@ -137,7 +138,7 @@ docs/
 - 初始化菜单栏、设置窗口、权限对象、拖拽协调器
 - 每 2 秒刷新一次输入监控权限
 - 首次缺少输入监控权限时显示欢迎窗口
-- 权限缺失或事件监听失败时显示恢复窗口
+- 输入监听临时禁用时先自动恢复，连续失败后显示恢复窗口
 - 通过 `RuntimeStatus` 同步菜单栏和设置窗口的用户可见状态
 - 处理菜单栏回调：启用/停用、打开设置、打开系统设置、退出
 
@@ -161,6 +162,14 @@ docs/
 
 只有 `DragCoordinator` 判定该左键序列由 DragFrame 接管时才会返回 `nil`。
 
+当收到 `.tapDisabledByTimeout` 或 `.tapDisabledByUserInput`：
+
+1. 先调用 `reenable()` 尝试重新启用当前 event tap。
+2. 将禁用原因和轻度恢复结果交给 `DragCoordinator`。
+3. 不吞掉该 disabled 事件。
+
+如果轻度恢复失败，`restart()` 会销毁旧 tap 并重新创建 active event tap。
+
 ### `DragCoordinator`
 
 连接事件监听、核心状态机和覆盖窗口：
@@ -170,6 +179,23 @@ docs/
 3. 用 `DragStateMachine` 判断是否显示、更新或隐藏方框。
 4. 将 Quartz 坐标转换为 AppKit 坐标。
 5. 调用 `OverlayWindowController` 更新覆盖层。
+
+监听恢复规则：
+
+- event tap 被禁用时，先取消当前拖拽状态并隐藏 overlay。
+- 如果 `GlobalEventMonitor.reenable()` 成功，静默恢复并清空失败计数。
+- 如果 re-enable 失败，延迟 0.35 秒重建 event tap。
+- 连续重建失败 3 次后，才通知应用层展示恢复说明。
+- 用户暂停 DragFrame 时，不进行自动恢复。
+
+### `MonitorRecoveryState`
+
+纯 Swift 状态模型，记录 event tap 重建失败次数：
+
+- 默认阈值：3 次
+- `recordRestartFailure()` 增加失败计数
+- `shouldSurfaceFailure` 判断是否需要显示用户可见错误
+- `reset()` 在恢复成功或用户停用时清零
 
 ### `OverlayWindowController`
 

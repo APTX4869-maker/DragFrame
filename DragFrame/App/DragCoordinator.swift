@@ -4,11 +4,15 @@ import DragFrameCore
 final class DragCoordinator: GlobalEventMonitorDelegate {
     var onMonitorStartFailure: (() -> Void)?
     var onMonitorStarted: (() -> Void)?
+    var onMonitorRecovered: (() -> Void)?
+    var onMonitorRecoveryFailed: (() -> Void)?
 
     private let monitor: GlobalEventMonitor
     private let overlay: OverlayWindowController
     private var stateMachine: DragStateMachine
     private var captureState = DragCaptureState()
+    private var recoveryState = MonitorRecoveryState()
+    private var isRestartScheduled = false
     private(set) var isEnabled = true
 
     init(
@@ -26,14 +30,22 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
         isEnabled = enabled
 
         if enabled && permissionGranted {
+            guard !recoveryState.shouldSurfaceFailure else {
+                onMonitorStartFailure?()
+                return
+            }
+
             if monitor.start() {
+                recoveryState.reset()
                 onMonitorStarted?()
             } else {
-                onMonitorStartFailure?()
+                scheduleMonitorRestart()
             }
         } else {
             monitor.stop()
             captureState.cancel()
+            recoveryState.reset()
+            isRestartScheduled = false
             apply(stateMachine.cancel())
         }
     }
@@ -74,9 +86,23 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
         }
     }
 
-    func globalEventMonitorWasDisabled(_ monitor: GlobalEventMonitor) {
+    func globalEventMonitor(
+        _ monitor: GlobalEventMonitor,
+        wasDisabled reason: MonitorDisableReason,
+        recoveredByReenable: Bool
+    ) {
         captureState.cancel()
         apply(stateMachine.cancel())
+
+        guard isEnabled else { return }
+
+        if recoveredByReenable {
+            recoveryState.reset()
+            onMonitorRecovered?()
+            return
+        }
+
+        scheduleMonitorRestart()
     }
 
     private func appKitPoint(from quartzPoint: CGPoint) -> CGPoint {
@@ -95,6 +121,32 @@ final class DragCoordinator: GlobalEventMonitorDelegate {
             overlay.show(selectionRect: rect)
         case .hide:
             overlay.hide()
+        }
+    }
+
+    private func scheduleMonitorRestart() {
+        guard !isRestartScheduled else { return }
+
+        isRestartScheduled = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in
+            guard let self else { return }
+            self.isRestartScheduled = false
+
+            guard self.isEnabled else { return }
+
+            if self.monitor.restart() {
+                self.recoveryState.reset()
+                self.onMonitorRecovered?()
+            } else {
+                self.recoveryState.recordRestartFailure()
+
+                if self.recoveryState.shouldSurfaceFailure {
+                    self.onMonitorRecoveryFailed?()
+                } else {
+                    self.scheduleMonitorRestart()
+                }
+            }
         }
     }
 }

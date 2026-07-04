@@ -4,7 +4,11 @@ import Foundation
 
 protocol GlobalEventMonitorDelegate: AnyObject {
     func globalEventMonitor(_ monitor: GlobalEventMonitor, received event: MonitoredInputEvent) -> Bool
-    func globalEventMonitorWasDisabled(_ monitor: GlobalEventMonitor)
+    func globalEventMonitor(
+        _ monitor: GlobalEventMonitor,
+        wasDisabled reason: MonitorDisableReason,
+        recoveredByReenable: Bool
+    )
 }
 
 enum MonitoredInputEvent {
@@ -12,6 +16,11 @@ enum MonitoredInputEvent {
     case leftMouseDragged(point: CGPoint, modifiers: ModifierShortcut)
     case leftMouseUp
     case flagsChanged(modifiers: ModifierShortcut)
+}
+
+enum MonitorDisableReason {
+    case timeout
+    case userInput
 }
 
 final class GlobalEventMonitor {
@@ -73,12 +82,28 @@ final class GlobalEventMonitor {
         eventTap = nil
     }
 
+    @discardableResult
+    func reenable() -> Bool {
+        guard let eventTap else { return false }
+
+        CGEvent.tapEnable(tap: eventTap, enable: true)
+        return CGEvent.tapIsEnabled(tap: eventTap)
+    }
+
+    @discardableResult
+    func restart() -> Bool {
+        stop()
+        return start()
+    }
+
     fileprivate func receive(type: CGEventType, event: CGEvent) -> Bool {
-        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
-            if let eventTap {
-                CGEvent.tapEnable(tap: eventTap, enable: true)
-            }
-            delegate?.globalEventMonitorWasDisabled(self)
+        if let disableReason = MonitorDisableReason(eventType: type) {
+            let recovered = reenable()
+            delegate?.globalEventMonitor(
+                self,
+                wasDisabled: disableReason,
+                recoveredByReenable: recovered
+            )
             return false
         }
 
@@ -109,6 +134,19 @@ final class GlobalEventMonitor {
 
     deinit {
         stop()
+    }
+}
+
+private extension MonitorDisableReason {
+    init?(eventType: CGEventType) {
+        switch eventType {
+        case .tapDisabledByTimeout:
+            self = .timeout
+        case .tapDisabledByUserInput:
+            self = .userInput
+        default:
+            return nil
+        }
     }
 }
 

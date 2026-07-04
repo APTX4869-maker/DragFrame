@@ -81,10 +81,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         coordinator.onMonitorStartFailure = { [weak self] in
+            self?.surfaceMonitorFailure()
+        }
+
+        coordinator.onMonitorRecoveryFailed = { [weak self] in
+            self?.surfaceMonitorFailure()
+        }
+
+        coordinator.onMonitorRecovered = { [weak self] in
             guard let self else { return }
-            self.runtimeStatus.reportMonitorFailure(self.monitorStartFailureMessage)
+            self.runtimeStatus.clearMonitorFailure()
+            self.didPresentRecoveryWindow = false
             self.updateRuntimePresentation()
-            self.presentRecoveryWindowIfNeeded()
         }
 
         coordinator.onMonitorStarted = { [weak self] in
@@ -159,5 +167,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             permissionGranted: permission.isAuthorized
         )
         statusController.update(runtimeState: runtimeStatus.state)
+    }
+
+    private func surfaceMonitorFailure() {
+        runtimeStatus.reportMonitorFailure(monitorStartFailureMessage)
+        updateRuntimePresentation()
+        presentRecoveryWindowIfNeeded()
     }
 }

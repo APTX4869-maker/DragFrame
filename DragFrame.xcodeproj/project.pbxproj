@@ -13,6 +13,7 @@
 		45E756337D1A844F100D1A86 /* OverlayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB352A91232AFECFDC70845A /* OverlayWindowController.swift */; };
 		4DA8D60184CC479D4827AF67 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AD9A9E3923545F76AE44EE /* WelcomeView.swift */; };
 		66C160965507041DBE62FD07 /* RuntimeStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A45E893CCF3A735C092B388 /* RuntimeStatus.swift */; };
+		8345B6C0B0388FAD395CED80 /* MonitorRecoveryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA1EB4731A73F8670827BE1 /* MonitorRecoveryState.swift */; };
 		8511BBAFF96005734ED2E51E /* ModifierShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */; };
 		894AC34332A89E3264E54DA6 /* DragCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED2DAEC17EDD2F0F6D99778 /* DragCoordinator.swift */; };
 		9A688C774CB0A4329EDD4A79 /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C427946F48B93B86CFED0E /* StatusItemController.swift */; };
@@ -90,6 +91,7 @@
 		36C33AD28E02A68278F78408 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		4443A98233C221D6F09E3662 /* GlobalEventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalEventMonitor.swift; sourceTree = "<group>"; };
 		56364BA9A97073F1C3560528 /* GradientBorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderView.swift; sourceTree = "<group>"; };
+		5EA1EB4731A73F8670827BE1 /* MonitorRecoveryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorRecoveryState.swift; sourceTree = "<group>"; };
 		6A4121AA5F6E6B1E4F3D624F /* DragFrameCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DragFrameCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		78BBBC9F0EB5C79F9EEEB25E /* ApplicationMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMain.swift; sourceTree = "<group>"; };
 		87FC0DCA7DD12E255E39D24E /* DragFrameCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragFrameCoreTests.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 				170A16F50094E45332CDA436 /* DragCaptureState.swift */,
 				C47540103E23586C6AE1C2B2 /* DragStateMachine.swift */,
 				16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */,
+				5EA1EB4731A73F8670827BE1 /* MonitorRecoveryState.swift */,
 				FE7B4AAB38FB40A754285992 /* ShortcutSettings.swift */,
 			);
 			path = DragFrameCore;
@@ -350,6 +353,7 @@
 				E61F53411EAE5FB678F095AD /* DragCaptureState.swift in Sources */,
 				EC36C1582EE7F98843345C44 /* DragStateMachine.swift in Sources */,
 				8511BBAFF96005734ED2E51E /* ModifierShortcut.swift in Sources */,
+				8345B6C0B0388FAD395CED80 /* MonitorRecoveryState.swift in Sources */,
 				158AE2FBB4754F2315347902 /* ShortcutSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

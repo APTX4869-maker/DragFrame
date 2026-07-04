@@ -154,6 +154,49 @@ final class CoordinateConverterTests: XCTestCase {
     }
 }
 
+final class MonitorRecoveryStateTests: XCTestCase {
+    func testInitialStateDoesNotSurfaceFailure() {
+        let state = MonitorRecoveryState()
+
+        XCTAssertEqual(state.restartFailureCount, 0)
+        XCTAssertFalse(state.shouldSurfaceFailure)
+    }
+
+    func testSurfacesFailureAfterMaximumAttempts() {
+        var state = MonitorRecoveryState(maxRestartAttempts: 3)
+
+        state.recordRestartFailure()
+        XCTAssertFalse(state.shouldSurfaceFailure)
+
+        state.recordRestartFailure()
+        XCTAssertFalse(state.shouldSurfaceFailure)
+
+        state.recordRestartFailure()
+        XCTAssertTrue(state.shouldSurfaceFailure)
+    }
+
+    func testResetClearsFailureCount() {
+        var state = MonitorRecoveryState(maxRestartAttempts: 2)
+
+        state.recordRestartFailure()
+        state.recordRestartFailure()
+        XCTAssertTrue(state.shouldSurfaceFailure)
+
+        state.reset()
+
+        XCTAssertEqual(state.restartFailureCount, 0)
+        XCTAssertFalse(state.shouldSurfaceFailure)
+    }
+
+    func testMinimumMaximumAttemptsIsOne() {
+        var state = MonitorRecoveryState(maxRestartAttempts: 0)
+
+        state.recordRestartFailure()
+
+        XCTAssertTrue(state.shouldSurfaceFailure)
+    }
+}
+
 final class ShortcutSettingsTests: XCTestCase {
     private var defaults: UserDefaults!
     private var suiteName: String!
