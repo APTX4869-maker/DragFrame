@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> Historical note: this plan was written before DragFrame switched from a listen-only event tap to an active event tap for suppressing underlying text selection. Current implementation details are documented in `docs/development.md`.
+
 **Goal:** Make DragFrame visibly recover from input-monitoring failures and show a system-adaptive menu bar icon.
 
 **Architecture:** Add a small observable runtime status object shared by the app delegate and settings view. Keep global event monitoring read-only, but report both start success and failure so the UI can clear or show recovery guidance. Use template SF Symbol status bar images so AppKit handles white/black menu bar tinting.
@@ -12,7 +14,7 @@
 
 - macOS deployment target remains `13.0`.
 - DragFrame stays a menu bar utility with `LSUIElement`.
-- The global event tap remains `.listenOnly` and must not consume or modify user input.
+- The final implementation uses an active event tap and suppresses only left-mouse sequences that begin with the configured shortcut held.
 - Trigger shortcut remains `Shift + Option` by default.
 
 ---

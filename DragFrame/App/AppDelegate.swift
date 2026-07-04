@@ -110,7 +110,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.activate(ignoringOtherApps: true)
             let alert = NSAlert()
             alert.messageText = "允许 DragFrame 监听拖拽"
-            alert.informativeText = "DragFrame 只读取修饰键和鼠标拖动，用来显示渐变方框；不会拦截、修改或保存输入内容。"
+            alert.informativeText = "DragFrame 会读取修饰键和鼠标拖动，用来显示渐变方框；仅在快捷键框选期间接管这一段左键拖拽，避免底层内容被选中，不会保存输入内容。"
             alert.alertStyle = .informational
             alert.addButton(withTitle: "继续授权")
             alert.addButton(withTitle: "稍后")
