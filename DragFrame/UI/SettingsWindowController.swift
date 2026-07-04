@@ -8,6 +8,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         permission: InputMonitoringPermission,
         runtimeStatus: RuntimeStatus,
         launchAtLogin: LaunchAtLoginController,
+        overlayStyleSettings: OverlayStyleSettings,
         openPrivacySettings: @escaping () -> Void
     ) {
         let rootView = SettingsView(
@@ -15,6 +16,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
             permission: permission,
             runtimeStatus: runtimeStatus,
             launchAtLogin: launchAtLogin,
+            overlayStyleSettings: overlayStyleSettings,
             openPrivacySettings: openPrivacySettings
         )
         let hostingController = NSHostingController(rootView: rootView)

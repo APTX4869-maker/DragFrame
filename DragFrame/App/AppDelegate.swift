@@ -6,13 +6,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let permission = InputMonitoringPermission()
     private let runtimeStatus = RuntimeStatus()
     private let launchAtLogin = LaunchAtLoginController()
-    private lazy var coordinator = DragCoordinator(shortcut: shortcutSettings.shortcut)
+    private let overlayStyleSettings = OverlayStyleSettings()
+    private lazy var overlayController = OverlayWindowController(style: overlayStyleSettings.style)
+    private lazy var coordinator = DragCoordinator(
+        shortcut: shortcutSettings.shortcut,
+        overlay: overlayController
+    )
     private lazy var statusController = StatusItemController()
     private lazy var settingsWindowController = SettingsWindowController(
         shortcutSettings: shortcutSettings,
         permission: permission,
         runtimeStatus: runtimeStatus,
         launchAtLogin: launchAtLogin,
+        overlayStyleSettings: overlayStyleSettings,
         openPrivacySettings: { [weak self] in self?.openPrivacySettings() }
     )
 
@@ -25,6 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         configureCallbacks()
         statusController.update(shortcut: shortcutSettings.shortcut)
+        overlayController.update(style: overlayStyleSettings.style)
         refreshPermissionState()
         launchAtLogin.refresh()
         startPermissionTimer()
@@ -46,6 +53,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         shortcutSettings.onChange = { [weak self] shortcut in
             self?.coordinator.updateShortcut(shortcut)
             self?.statusController.update(shortcut: shortcut)
+        }
+
+        overlayStyleSettings.onChange = { [weak self] style in
+            self?.overlayController.update(style: style)
         }
 
         statusController.onEnabledChanged = { [weak self] enabled in

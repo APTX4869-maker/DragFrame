@@ -6,7 +6,7 @@ final class GradientBorderView: NSView {
 
     private let gradientLayer = CAGradientLayer()
     private let borderMaskLayer = CAShapeLayer()
-    private let style: OverlayStyle
+    private var style: OverlayStyle
 
     init(frame frameRect: NSRect, style: OverlayStyle = .default) {
         self.style = style
@@ -21,6 +21,16 @@ final class GradientBorderView: NSView {
     }
 
     override var isOpaque: Bool { false }
+
+    var contentInset: CGFloat {
+        style.contentInset
+    }
+
+    func update(style: OverlayStyle) {
+        self.style = style
+        applyStyle()
+        needsLayout = true
+    }
 
     override func layout() {
         super.layout()
@@ -60,12 +70,16 @@ final class GradientBorderView: NSView {
         borderMaskLayer.lineCap = .round
         borderMaskLayer.lineJoin = .round
 
+        applyStyle()
+        gradientLayer.mask = borderMaskLayer
+
+        layer?.addSublayer(gradientLayer)
+    }
+
+    private func applyStyle() {
         gradientLayer.colors = style.colors.map(\.cgColor)
         gradientLayer.locations = style.locations
         gradientLayer.startPoint = style.startPoint
         gradientLayer.endPoint = style.endPoint
-        gradientLayer.mask = borderMaskLayer
-
-        layer?.addSublayer(gradientLayer)
     }
 }

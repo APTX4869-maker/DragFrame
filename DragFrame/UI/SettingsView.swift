@@ -1,3 +1,4 @@
+import AppKit
 import DragFrameCore
 import SwiftUI
 
@@ -6,6 +7,7 @@ struct SettingsView: View {
     @ObservedObject var permission: InputMonitoringPermission
     @ObservedObject var runtimeStatus: RuntimeStatus
     @ObservedObject var launchAtLogin: LaunchAtLoginController
+    @ObservedObject var overlayStyleSettings: OverlayStyleSettings
     let openPrivacySettings: () -> Void
 
     var body: some View {
@@ -35,7 +37,7 @@ struct SettingsView: View {
             Spacer(minLength: 0)
         }
         .padding(24)
-        .frame(width: 580, height: 560)
+        .frame(width: 620, height: 640)
     }
 
     private var header: some View {
@@ -133,27 +135,54 @@ struct SettingsView: View {
     }
 
     private var appearanceSection: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(
-                    LinearGradient(
-                        colors: OverlayStyle.default.colors.map(Color.init),
-                        startPoint: .bottomLeading,
-                        endPoint: .topTrailing
-                    ),
-                    lineWidth: 3
-                )
-                .frame(width: 42, height: 28)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 14) {
+                stylePreview(width: 58, height: 36)
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text("默认框选样式")
-                    .fontWeight(.medium)
-                Text(OverlayStyle.default.appearanceSummary)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("边框颜色")
+                        .fontWeight(.medium)
+                    Text("\(overlayStyleSettings.style.appearanceSummary) · 框内始终透明")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 0)
+
+                Button("恢复默认") {
+                    overlayStyleSettings.resetToDefault()
+                }
+                .controlSize(.small)
             }
 
-            Spacer(minLength: 0)
+            Picker("颜色方案", selection: $overlayStyleSettings.selectedPreset) {
+                ForEach(OverlayStylePreset.allCases) { preset in
+                    Text(preset.displayName).tag(preset)
+                }
+            }
+            .pickerStyle(.menu)
+
+            if overlayStyleSettings.selectedPreset == .custom {
+                VStack(alignment: .leading, spacing: 10) {
+                    ColorPicker(
+                        "起始颜色",
+                        selection: colorBinding(\.customStartColor),
+                        supportsOpacity: false
+                    )
+                    ColorPicker(
+                        "中间颜色",
+                        selection: colorBinding(\.customMiddleColor),
+                        supportsOpacity: false
+                    )
+                    ColorPicker(
+                        "结束颜色",
+                        selection: colorBinding(\.customEndColor),
+                        supportsOpacity: false
+                    )
+                }
+                .padding(12)
+                .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
+            }
         }
         .padding(8)
     }
@@ -205,5 +234,30 @@ struct SettingsView: View {
             )
         )
         .toggleStyle(.checkbox)
+    }
+
+    private func stylePreview(width: CGFloat, height: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: 10)
+            .strokeBorder(
+                LinearGradient(
+                    colors: overlayStyleSettings.style.colors.map(Color.init),
+                    startPoint: .bottomLeading,
+                    endPoint: .topTrailing
+                ),
+                lineWidth: 4
+            )
+            .background(.clear)
+            .frame(width: width, height: height)
+    }
+
+    private func colorBinding(_ keyPath: ReferenceWritableKeyPath<OverlayStyleSettings, NSColor>) -> Binding<Color> {
+        Binding(
+            get: {
+                Color(nsColor: overlayStyleSettings[keyPath: keyPath])
+            },
+            set: { newValue in
+                overlayStyleSettings[keyPath: keyPath] = NSColor(newValue)
+            }
+        )
     }
 }

@@ -4,8 +4,8 @@ final class OverlayWindowController {
     private let panel: NSPanel
     private let borderView: GradientBorderView
 
-    init() {
-        borderView = GradientBorderView(frame: .zero)
+    init(style: OverlayStyle = .default) {
+        borderView = GradientBorderView(frame: .zero, style: style)
         panel = NSPanel(
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
@@ -30,13 +30,17 @@ final class OverlayWindowController {
         panel.sharingType = .none
     }
 
+    func update(style: OverlayStyle) {
+        borderView.update(style: style)
+    }
+
     func show(selectionRect: CGRect) {
         guard selectionRect.width > 0, selectionRect.height > 0 else {
             hide()
             return
         }
 
-        let inset = GradientBorderView.contentInset
+        let inset = borderView.contentInset
         let panelFrame = selectionRect.insetBy(dx: -inset, dy: -inset)
         panel.setFrame(panelFrame, display: true)
         borderView.frame = CGRect(origin: .zero, size: panelFrame.size)
@@ -48,4 +52,3 @@ final class OverlayWindowController {
         panel.orderOut(nil)
     }
 }
-
