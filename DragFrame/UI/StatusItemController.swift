@@ -10,7 +10,7 @@ final class StatusItemController: NSObject {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let enabledItem = NSMenuItem()
     private let shortcutItem = NSMenuItem()
-    private let permissionMessageItem = NSMenuItem()
+    private let statusMessageItem = NSMenuItem()
     private let privacySettingsItem = NSMenuItem()
 
     private(set) var isEnabled = true
@@ -25,28 +25,20 @@ final class StatusItemController: NSObject {
         shortcutItem.title = "当前快捷键：\(shortcut.displayString)"
     }
 
-    func update(permissionGranted: Bool) {
-        permissionMessageItem.isHidden = permissionGranted
-        privacySettingsItem.isHidden = permissionGranted
+    func update(runtimeState: RuntimeState) {
+        statusMessageItem.title = "状态：\(runtimeState.title)"
+        statusMessageItem.isHidden = false
+        privacySettingsItem.isHidden = !runtimeState.needsPrivacyAction
 
-        let symbolName = permissionGranted ? "rectangle.dashed" : "exclamationmark.rectangle"
         statusItem.button?.image = statusImage(
-            named: symbolName,
+            named: runtimeState.symbolName,
             accessibilityDescription: "DragFrame"
         )
-        statusItem.button?.toolTip = permissionGranted
-            ? "DragFrame 已就绪"
-            : "DragFrame 需要输入监控权限"
+        statusItem.button?.toolTip = "DragFrame \(runtimeState.title)"
     }
 
     func showMonitorStartFailure() {
-        permissionMessageItem.title = "无法启动输入监听"
-        permissionMessageItem.isHidden = false
-        privacySettingsItem.isHidden = false
-        statusItem.button?.image = statusImage(
-            named: "exclamationmark.rectangle",
-            accessibilityDescription: "DragFrame 监听失败"
-        )
+        update(runtimeState: .monitorFailed(message: "输入监听未启动"))
     }
 
     private func configureStatusItem() {
@@ -80,10 +72,10 @@ final class StatusItemController: NSObject {
 
         menu.addItem(.separator())
 
-        permissionMessageItem.title = "需要输入监控权限"
-        permissionMessageItem.isEnabled = false
-        permissionMessageItem.isHidden = true
-        menu.addItem(permissionMessageItem)
+        statusMessageItem.title = "状态：正在检查…"
+        statusMessageItem.isEnabled = false
+        statusMessageItem.isHidden = false
+        menu.addItem(statusMessageItem)
 
         privacySettingsItem.title = "打开系统设置…"
         privacySettingsItem.target = self

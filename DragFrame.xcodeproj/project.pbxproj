@@ -17,6 +17,8 @@
 		9A688C774CB0A4329EDD4A79 /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C427946F48B93B86CFED0E /* StatusItemController.swift */; };
 		9B0BCE219FEA44DD4E295C71 /* InputMonitoringPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7635C157B7953A1FDE6A8D /* InputMonitoringPermission.swift */; };
 		9C0AC91EF7DF7540F376F2E5 /* ApplicationMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BBBC9F0EB5C79F9EEEB25E /* ApplicationMain.swift */; };
+		9CA305D32FA1A1B7B229F2A6 /* LaunchAtLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CFEA0EB3EEF32F5FE1141 /* LaunchAtLoginController.swift */; };
+		B28565A2EDD0DCEFC3FDD446 /* OverlayStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFE5D7AD4DA294FB56128B2 /* OverlayStyle.swift */; };
 		B31DEB4E7DB793596765AD7B /* DragFrameCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC0DCA7DD12E255E39D24E /* DragFrameCoreTests.swift */; };
 		B820BC9959A421E8BC0DE4DA /* CoordinateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5B97138DEE20EA183A6F3B /* CoordinateConverter.swift */; };
 		BAE37F79D7ECDD4A19B66F99 /* DragFrameCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 26DE4FC2B5FD9D3924FB583B /* DragFrameCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -76,6 +78,7 @@
 /* Begin PBXFileReference section */
 		04BB6B0A5AC55B9782C1A282 /* DragFrame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DragFrame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C7635C157B7953A1FDE6A8D /* InputMonitoringPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputMonitoringPermission.swift; sourceTree = "<group>"; };
+		0E7CFEA0EB3EEF32F5FE1141 /* LaunchAtLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginController.swift; sourceTree = "<group>"; };
 		16C5806E63D5AD9CE97B74DE /* ModifierShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifierShortcut.swift; sourceTree = "<group>"; };
 		170A16F50094E45332CDA436 /* DragCaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCaptureState.swift; sourceTree = "<group>"; };
 		1A45E893CCF3A735C092B388 /* RuntimeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeStatus.swift; sourceTree = "<group>"; };
@@ -87,6 +90,7 @@
 		6A4121AA5F6E6B1E4F3D624F /* DragFrameCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DragFrameCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		78BBBC9F0EB5C79F9EEEB25E /* ApplicationMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMain.swift; sourceTree = "<group>"; };
 		87FC0DCA7DD12E255E39D24E /* DragFrameCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragFrameCoreTests.swift; sourceTree = "<group>"; };
+		8DFE5D7AD4DA294FB56128B2 /* OverlayStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayStyle.swift; sourceTree = "<group>"; };
 		9DF989467C9437CEE6189689 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A63C56663AEDF3D959AE6676 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AED2DAEC17EDD2F0F6D99778 /* DragCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragCoordinator.swift; sourceTree = "<group>"; };
@@ -121,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				56364BA9A97073F1C3560528 /* GradientBorderView.swift */,
+				8DFE5D7AD4DA294FB56128B2 /* OverlayStyle.swift */,
 				DB352A91232AFECFDC70845A /* OverlayWindowController.swift */,
 			);
 			path = Overlay;
@@ -169,6 +174,7 @@
 			children = (
 				4443A98233C221D6F09E3662 /* GlobalEventMonitor.swift */,
 				0C7635C157B7953A1FDE6A8D /* InputMonitoringPermission.swift */,
+				0E7CFEA0EB3EEF32F5FE1141 /* LaunchAtLoginController.swift */,
 				1A45E893CCF3A735C092B388 /* RuntimeStatus.swift */,
 			);
 			path = Services;
@@ -360,6 +366,8 @@
 				FB9DD42129DD0D30945B8BBC /* GlobalEventMonitor.swift in Sources */,
 				E6E13EED05EAA991CACCEC40 /* GradientBorderView.swift in Sources */,
 				9B0BCE219FEA44DD4E295C71 /* InputMonitoringPermission.swift in Sources */,
+				9CA305D32FA1A1B7B229F2A6 /* LaunchAtLoginController.swift in Sources */,
+				B28565A2EDD0DCEFC3FDD446 /* OverlayStyle.swift in Sources */,
 				45E756337D1A844F100D1A86 /* OverlayWindowController.swift in Sources */,
 				66C160965507041DBE62FD07 /* RuntimeStatus.swift in Sources */,
 				2A70A9149E80B9DAEE10A091 /* SettingsView.swift in Sources */,

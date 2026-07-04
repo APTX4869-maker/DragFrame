@@ -2,17 +2,20 @@ import AppKit
 import QuartzCore
 
 final class GradientBorderView: NSView {
-    static let contentInset: CGFloat = 14
+    static let contentInset = OverlayStyle.default.contentInset
 
     private let gradientLayer = CAGradientLayer()
     private let borderMaskLayer = CAShapeLayer()
+    private let style: OverlayStyle
 
-    override init(frame frameRect: NSRect) {
+    init(frame frameRect: NSRect, style: OverlayStyle = .default) {
+        self.style = style
         super.init(frame: frameRect)
         configureLayers()
     }
 
     required init?(coder: NSCoder) {
+        style = .default
         super.init(coder: coder)
         configureLayers()
     }
@@ -28,12 +31,12 @@ final class GradientBorderView: NSView {
         gradientLayer.frame = bounds
         borderMaskLayer.frame = bounds
 
-        let lineWidth: CGFloat = 6
+        let lineWidth = style.lineWidth
         let rect = bounds.insetBy(
-            dx: Self.contentInset + lineWidth / 2,
-            dy: Self.contentInset + lineWidth / 2
+            dx: style.contentInset + lineWidth / 2,
+            dy: style.contentInset + lineWidth / 2
         )
-        let radius = max(0, min(18, min(rect.width, rect.height) / 2))
+        let radius = max(0, min(style.cornerRadius, min(rect.width, rect.height) / 2))
         let path = CGPath(
             roundedRect: rect,
             cornerWidth: radius,
@@ -57,14 +60,10 @@ final class GradientBorderView: NSView {
         borderMaskLayer.lineCap = .round
         borderMaskLayer.lineJoin = .round
 
-        gradientLayer.colors = [
-            NSColor(calibratedRed: 1.00, green: 0.68, blue: 0.10, alpha: 1).cgColor,
-            NSColor(calibratedRed: 1.00, green: 0.22, blue: 0.49, alpha: 1).cgColor,
-            NSColor(calibratedRed: 0.43, green: 0.31, blue: 1.00, alpha: 1).cgColor
-        ]
-        gradientLayer.locations = [0, 0.52, 1]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 1)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        gradientLayer.colors = style.colors.map(\.cgColor)
+        gradientLayer.locations = style.locations
+        gradientLayer.startPoint = style.startPoint
+        gradientLayer.endPoint = style.endPoint
         gradientLayer.mask = borderMaskLayer
 
         layer?.addSublayer(gradientLayer)

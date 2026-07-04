@@ -5,19 +5,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let shortcutSettings = ShortcutSettings()
     private let permission = InputMonitoringPermission()
     private let runtimeStatus = RuntimeStatus()
+    private let launchAtLogin = LaunchAtLoginController()
     private lazy var coordinator = DragCoordinator(shortcut: shortcutSettings.shortcut)
     private lazy var statusController = StatusItemController()
     private lazy var settingsWindowController = SettingsWindowController(
         shortcutSettings: shortcutSettings,
         permission: permission,
         runtimeStatus: runtimeStatus,
+        launchAtLogin: launchAtLogin,
         openPrivacySettings: { [weak self] in self?.openPrivacySettings() }
     )
 
     private var permissionTimer: Timer?
     private var didPresentRecoveryWindow = false
     private let explanationKey = "dragFrame.didExplainInputMonitoring"
-    private let missingPermissionMessage = "当前版本的 DragFrame 还没有可用的输入监控权限。请在系统设置 → 隐私与安全性 → 输入监控 中打开 DragFrame；如果它已经打开，请先关闭再重新打开。"
     private let monitorStartFailureMessage = "macOS 拒绝了 DragFrame 的全局输入监听。通常是旧授权记录绑定了旧签名。请在输入监控中关闭再重新打开 DragFrame，然后重启应用。"
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -25,6 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         configureCallbacks()
         statusController.update(shortcut: shortcutSettings.shortcut)
         refreshPermissionState()
+        launchAtLogin.refresh()
         startPermissionTimer()
         if !presentPermissionExplanationIfNeeded() {
             presentRecoveryWindowIfNeeded()
@@ -49,6 +51,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusController.onEnabledChanged = { [weak self] enabled in
             guard let self else { return }
             self.coordinator.setEnabled(enabled, permissionGranted: self.permission.isAuthorized)
+            self.updateRuntimePresentation()
         }
         statusController.onOpenSettings = { [weak self] in
             self?.settingsWindowController.present()
@@ -63,7 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         coordinator.onMonitorStartFailure = { [weak self] in
             guard let self else { return }
             self.runtimeStatus.reportMonitorFailure(self.monitorStartFailureMessage)
-            self.statusController.showMonitorStartFailure()
+            self.updateRuntimePresentation()
             self.presentRecoveryWindowIfNeeded()
         }
 
@@ -71,7 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return }
             self.runtimeStatus.clearMonitorFailure()
             self.didPresentRecoveryWindow = false
-            self.statusController.update(permissionGranted: self.permission.isAuthorized)
+            self.updateRuntimePresentation()
         }
     }
 
@@ -80,10 +83,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if granted {
             runtimeStatus.clearMonitorFailure()
         } else {
-            runtimeStatus.reportMonitorFailure(missingPermissionMessage)
+            runtimeStatus.reportMonitorFailure(RuntimeStatus.defaultPermissionMessage)
         }
-        statusController.update(permissionGranted: granted)
         coordinator.updatePermission(granted: granted)
+        updateRuntimePresentation()
     }
 
     private func startPermissionTimer() {
@@ -142,5 +145,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             permission.openSystemSettings()
         }
         refreshPermissionState()
+    }
+
+    private func updateRuntimePresentation() {
+        runtimeStatus.update(
+            enabled: statusController.isEnabled,
+            permissionGranted: permission.isAuthorized
+        )
+        statusController.update(runtimeState: runtimeStatus.state)
     }
 }

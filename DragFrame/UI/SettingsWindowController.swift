@@ -7,12 +7,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         shortcutSettings: ShortcutSettings,
         permission: InputMonitoringPermission,
         runtimeStatus: RuntimeStatus,
+        launchAtLogin: LaunchAtLoginController,
         openPrivacySettings: @escaping () -> Void
     ) {
         let rootView = SettingsView(
             shortcutSettings: shortcutSettings,
             permission: permission,
             runtimeStatus: runtimeStatus,
+            launchAtLogin: launchAtLogin,
             openPrivacySettings: openPrivacySettings
         )
         let hostingController = NSHostingController(rootView: rootView)
@@ -20,6 +22,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         window.title = "DragFrame 设置"
         window.styleMask = [.titled, .closable, .miniaturizable]
         window.isReleasedWhenClosed = false
+        window.toolbarStyle = .unifiedCompact
         window.center()
 
         super.init(window: window)

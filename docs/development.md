@@ -13,6 +13,8 @@ DragFrame 是一个 macOS 原生菜单栏应用。用户按住配置好的修饰
 - 普通点击、普通拖拽、右键、滚轮和键盘输入不被拦截
 - 方框内部完全透明，只绘制 6pt 渐变圆角描边
 - 应用常驻菜单栏，不显示 Dock 图标
+- 可在设置中开启登录时自动启动
+- 菜单栏和设置窗口显示明确运行状态：已就绪、已暂停、缺少权限或监听失败
 
 ## 2. 技术栈
 
@@ -36,10 +38,12 @@ DragFrame/
     DragCoordinator.swift
   Overlay/
     GradientBorderView.swift
+    OverlayStyle.swift
     OverlayWindowController.swift
   Services/
     GlobalEventMonitor.swift
     InputMonitoringPermission.swift
+    LaunchAtLoginController.swift
     RuntimeStatus.swift
   UI/
     SettingsView.swift
@@ -129,6 +133,7 @@ docs/
 - 初始化菜单栏、设置窗口、权限对象、拖拽协调器
 - 每 2 秒刷新一次输入监控权限
 - 权限缺失或事件监听失败时显示恢复窗口
+- 通过 `RuntimeStatus` 同步菜单栏和设置窗口的用户可见状态
 - 处理菜单栏回调：启用/停用、打开设置、打开系统设置、退出
 
 ### `GlobalEventMonitor`
@@ -182,22 +187,57 @@ docs/
 - 不绘制填充，不绘制阴影
 - 描边宽度 6pt，圆角半径最多 18pt
 
+### `OverlayStyle`
+
+集中定义覆盖框视觉样式：
+
+- `lineWidth = 6`
+- `cornerRadius = 18`
+- `contentInset = 14`
+- 渐变颜色、位置和方向
+
+当前只提供默认样式，设置页展示样式摘要但不开放复杂主题配置。
+
+### `RuntimeStatus`
+
+统一表达应用对用户可见的运行状态：
+
+- `ready`：已授权且输入监听正常
+- `paused`：用户从菜单栏暂停了 DragFrame
+- `permissionMissing`：缺少输入监控权限
+- `monitorFailed`：权限看似存在，但 active event tap 启动失败
+
+菜单栏图标、tooltip、菜单状态行和设置窗口顶部状态都从这里读取，避免出现“一个地方显示正常，另一个地方显示异常”的错位。
+
+### `LaunchAtLoginController`
+
+封装 macOS 原生 `ServiceManagement`：
+
+- 使用 `SMAppService.mainApp.status` 读取登录项状态
+- 使用 `register()` 开启登录时启动
+- 使用 `unregister()` 关闭登录时启动
+- 注册或移除失败时在设置页显示简短错误，不影响拖拽主功能
+
 ### `StatusItemController`
 
 管理菜单栏图标和菜单：
 
 - 正常状态：`rectangle.dashed`
+- 暂停状态：`pause.rectangle`
 - 异常状态：`exclamationmark.rectangle`
 - 图标设置 `isTemplate = true`，由 macOS 自动适配深浅色状态栏
-- 菜单包含启用开关、当前快捷键、权限提示、设置入口和退出入口
+- 菜单包含启用开关、当前快捷键、状态提示、设置入口、系统设置入口和退出入口
 
 ### `SettingsView`
 
 SwiftUI 设置窗口：
 
+- 展示当前运行状态
 - 选择 `Option`、`Shift`、`Command`
 - 展示当前快捷键组合
 - 恢复默认值
+- 开启或关闭登录时自动启动
+- 展示当前覆盖框样式摘要
 - 展示输入监控权限状态
 - 展示监听失败恢复说明
 
@@ -307,6 +347,7 @@ open /Applications/DragFrame.app
 - 图标在浅色/深色/蓝色状态栏上可见。
 - 设置窗口能打开。
 - 默认快捷键显示为 `⇧⌥`。
+- 设置窗口展示运行状态、快捷键、启动、外观和权限分组。
 
 ### 拖拽框
 
@@ -327,6 +368,7 @@ open /Applications/DragFrame.app
 - 撤销输入监控权限后，菜单栏显示警告状态。
 - 设置窗口展示恢复说明。
 - 重新授权后，应用无需重启即可恢复监听。
+- 开启“登录时自动启动 DragFrame”后，设置项保持打开；关闭后保持关闭。
 
 ## 10. 常见问题
 
