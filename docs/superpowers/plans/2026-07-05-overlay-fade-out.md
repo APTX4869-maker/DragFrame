@@ -32,7 +32,7 @@
 - Modify: `DragFrame/Overlay/OverlayWindowController.swift`
 
 **Interfaces:**
-- Produces: `private let fadeOutDuration: TimeInterval = 0.16`
+- Produces: `private let fadeOutDuration: TimeInterval = 0.26`
 - Produces: `private var animationGeneration = 0`
 
 - [ ] Add the properties to `OverlayWindowController`.

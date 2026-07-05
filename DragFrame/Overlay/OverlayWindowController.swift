@@ -4,7 +4,7 @@ import QuartzCore
 final class OverlayWindowController {
     private let panel: NSPanel
     private let borderView: GradientBorderView
-    private let fadeOutDuration: TimeInterval = 0.16
+    private let fadeOutDuration: TimeInterval = 0.26
     private var animationGeneration = 0
 
     init(style: OverlayStyle = .default) {
