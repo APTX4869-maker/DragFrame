@@ -1,8 +1,11 @@
 import AppKit
+import QuartzCore
 
 final class OverlayWindowController {
     private let panel: NSPanel
     private let borderView: GradientBorderView
+    private let fadeOutDuration: TimeInterval = 0.16
+    private var animationGeneration = 0
 
     init(style: OverlayStyle = .default) {
         borderView = GradientBorderView(frame: .zero, style: style)
@@ -40,6 +43,9 @@ final class OverlayWindowController {
             return
         }
 
+        animationGeneration += 1
+        panel.alphaValue = 1
+
         let inset = borderView.contentInset
         let panelFrame = selectionRect.insetBy(dx: -inset, dy: -inset)
         panel.setFrame(panelFrame, display: true)
@@ -49,6 +55,24 @@ final class OverlayWindowController {
     }
 
     func hide() {
-        panel.orderOut(nil)
+        guard panel.isVisible else {
+            panel.alphaValue = 1
+            return
+        }
+
+        animationGeneration += 1
+        let currentGeneration = animationGeneration
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = fadeOutDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            panel.animator().alphaValue = 0
+        } completionHandler: { [weak self] in
+            guard let self else { return }
+            guard self.animationGeneration == currentGeneration else { return }
+
+            self.panel.orderOut(nil)
+            self.panel.alphaValue = 1
+        }
     }
 }
