@@ -4,8 +4,8 @@ import QuartzCore
 final class OverlayWindowController {
     private let panel: NSPanel
     private let borderView: GradientBorderView
-    private let maskPanel: NSPanel
-    private let maskView: SpotlightMaskView
+    private var maskPanel: NSPanel?
+    private var maskView: SpotlightMaskView?
     private var currentStyle: OverlayStyle
     private let fadeOutDuration: TimeInterval = 0.26
     private var animationGeneration = 0
@@ -35,30 +35,40 @@ final class OverlayWindowController {
             .ignoresCycle
         ]
         panel.sharingType = .none
+    }
 
-        maskView = SpotlightMaskView(frame: .zero)
-        maskPanel = NSPanel(
+    // 聚光灯遮罩 panel 按需创建：透明框模式完全不创建，避免启动早期引入额外窗口。
+    private func ensureMaskPanel() -> NSPanel {
+        if let maskPanel {
+            return maskPanel
+        }
+
+        let view = SpotlightMaskView(frame: .zero)
+        let created = NSPanel(
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: true
         )
-
-        maskPanel.contentView = maskView
-        maskPanel.isOpaque = false
-        maskPanel.backgroundColor = .clear
-        maskPanel.hasShadow = false
-        maskPanel.ignoresMouseEvents = true
-        maskPanel.hidesOnDeactivate = false
-        maskPanel.isReleasedWhenClosed = false
-        maskPanel.level = .screenSaver
-        maskPanel.collectionBehavior = [
+        created.contentView = view
+        created.isOpaque = false
+        created.backgroundColor = .clear
+        created.hasShadow = false
+        created.ignoresMouseEvents = true
+        created.hidesOnDeactivate = false
+        created.isReleasedWhenClosed = false
+        created.level = .screenSaver
+        created.collectionBehavior = [
             .canJoinAllSpaces,
             .fullScreenAuxiliary,
             .stationary,
             .ignoresCycle
         ]
-        maskPanel.sharingType = .none
+        created.sharingType = .none
+
+        maskView = view
+        maskPanel = created
+        return created
     }
 
     func update(style: OverlayStyle) {
@@ -78,22 +88,23 @@ final class OverlayWindowController {
         if currentStyle.mode == .spotlight {
             let unionFrame = NSScreen.screens.reduce(CGRect.null) { $0.union($1.frame) }
             if unionFrame.width > 0, unionFrame.height > 0 {
-                maskPanel.setFrame(unionFrame, display: false)
-                maskView.frame = CGRect(origin: .zero, size: unionFrame.size)
+                let mp = ensureMaskPanel()
+                mp.setFrame(unionFrame, display: false)
+                maskView?.frame = CGRect(origin: .zero, size: unionFrame.size)
                 let holeRect = selectionRect.offsetBy(
                     dx: -unionFrame.minX,
                     dy: -unionFrame.minY
                 )
-                maskView.update(
+                maskView?.update(
                     holeRect: holeRect,
                     cornerRadius: currentStyle.cornerRadius,
                     opacity: currentStyle.maskOpacity
                 )
-                maskPanel.alphaValue = 1
-                maskPanel.orderFrontRegardless()
+                mp.alphaValue = 1
+                mp.orderFrontRegardless()
             }
-        } else if maskPanel.isVisible {
-            maskPanel.orderOut(nil)
+        } else if maskPanel?.isVisible == true {
+            maskPanel?.orderOut(nil)
         }
 
         // 渐变边框层：始终显示，叠在遮罩之上。
@@ -108,11 +119,11 @@ final class OverlayWindowController {
 
     func hide() {
         let borderVisible = panel.isVisible
-        let maskVisible = maskPanel.isVisible
+        let maskVisible = maskPanel?.isVisible == true
 
         guard borderVisible || maskVisible else {
             panel.alphaValue = 1
-            maskPanel.alphaValue = 1
+            maskPanel?.alphaValue = 1
             return
         }
 
@@ -126,7 +137,7 @@ final class OverlayWindowController {
                 panel.animator().alphaValue = 0
             }
             if maskVisible {
-                maskPanel.animator().alphaValue = 0
+                maskPanel?.animator().alphaValue = 0
             }
         } completionHandler: { [weak self] in
             guard let self else { return }
@@ -137,8 +148,8 @@ final class OverlayWindowController {
                 self.panel.alphaValue = 1
             }
             if maskVisible {
-                self.maskPanel.orderOut(nil)
-                self.maskPanel.alphaValue = 1
+                self.maskPanel?.orderOut(nil)
+                self.maskPanel?.alphaValue = 1
             }
         }
     }
