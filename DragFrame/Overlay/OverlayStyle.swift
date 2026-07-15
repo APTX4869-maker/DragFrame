@@ -1,20 +1,6 @@
 import AppKit
 import Combine
 
-enum OverlayMode: String, CaseIterable, Identifiable {
-    case frame
-    case spotlight
-
-    var id: String { rawValue }
-
-    var displayName: String {
-        switch self {
-        case .frame: return "透明框"
-        case .spotlight: return "聚光灯遮罩"
-        }
-    }
-}
-
 struct OverlayStyle {
     static let `default` = OverlayStyle(
         lineWidth: 6,
@@ -27,9 +13,7 @@ struct OverlayStyle {
         ],
         locations: [0, 0.52, 1],
         startPoint: CGPoint(x: 0, y: 1),
-        endPoint: CGPoint(x: 1, y: 0),
-        mode: .frame,
-        maskOpacity: 0.55
+        endPoint: CGPoint(x: 1, y: 0)
     )
 
     let lineWidth: CGFloat
@@ -39,8 +23,6 @@ struct OverlayStyle {
     let locations: [NSNumber]
     let startPoint: CGPoint
     let endPoint: CGPoint
-    let mode: OverlayMode
-    let maskOpacity: CGFloat
 
     var appearanceSummary: String {
         "\(Int(lineWidth))pt 渐变描边 · \(Int(cornerRadius))pt 圆角 · 内部透明"
@@ -54,23 +36,7 @@ struct OverlayStyle {
             colors: colors,
             locations: locations,
             startPoint: startPoint,
-            endPoint: endPoint,
-            mode: mode,
-            maskOpacity: maskOpacity
-        )
-    }
-
-    func replacingMask(mode: OverlayMode, maskOpacity: CGFloat) -> OverlayStyle {
-        OverlayStyle(
-            lineWidth: lineWidth,
-            cornerRadius: cornerRadius,
-            contentInset: contentInset,
-            colors: colors,
-            locations: locations,
-            startPoint: startPoint,
-            endPoint: endPoint,
-            mode: mode,
-            maskOpacity: maskOpacity
+            endPoint: endPoint
         )
     }
 }
@@ -132,8 +98,6 @@ final class OverlayStyleSettings: ObservableObject {
     static let customStartColorKey = "dragFrame.overlayStyle.customStartColor"
     static let customMiddleColorKey = "dragFrame.overlayStyle.customMiddleColor"
     static let customEndColorKey = "dragFrame.overlayStyle.customEndColor"
-    static let overlayModeKey = "dragFrame.overlayStyle.mode"
-    static let spotlightOpacityKey = "dragFrame.overlayStyle.spotlightOpacity"
 
     var onChange: ((OverlayStyle) -> Void)?
 
@@ -165,29 +129,13 @@ final class OverlayStyleSettings: ObservableObject {
         }
     }
 
-    @Published var overlayMode: OverlayMode {
-        didSet {
-            defaults.set(overlayMode.rawValue, forKey: Self.overlayModeKey)
-            notifyChange()
-        }
-    }
-
-    @Published var spotlightOpacity: Double {
-        didSet {
-            defaults.set(spotlightOpacity, forKey: Self.spotlightOpacityKey)
-            notifyChange()
-        }
-    }
-
     private let defaults: UserDefaults
 
     var style: OverlayStyle {
         let colors = selectedPreset == .custom
             ? [customStartColor, customMiddleColor, customEndColor]
             : selectedPreset.colors
-        return OverlayStyle.default
-            .replacingColors(colors)
-            .replacingMask(mode: overlayMode, maskOpacity: CGFloat(spotlightOpacity))
+        return OverlayStyle.default.replacingColors(colors)
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -214,16 +162,6 @@ final class OverlayStyleSettings: ObservableObject {
             from: defaults.string(forKey: Self.customEndColorKey),
             fallback: fallbackColors[2]
         )
-
-        if let rawMode = defaults.string(forKey: Self.overlayModeKey),
-           let mode = OverlayMode(rawValue: rawMode) {
-            overlayMode = mode
-        } else {
-            overlayMode = .frame
-        }
-
-        let savedOpacity = defaults.double(forKey: Self.spotlightOpacityKey)
-        spotlightOpacity = savedOpacity >= 0.1 ? savedOpacity : 0.55
     }
 
     func resetToDefault() {
@@ -231,8 +169,6 @@ final class OverlayStyleSettings: ObservableObject {
         customStartColor = OverlayStylePreset.vibrant.colors[0]
         customMiddleColor = OverlayStylePreset.vibrant.colors[1]
         customEndColor = OverlayStylePreset.vibrant.colors[2]
-        overlayMode = .frame
-        spotlightOpacity = 0.55
     }
 
     private func persistPreset() {

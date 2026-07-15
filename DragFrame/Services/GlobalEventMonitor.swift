@@ -1,7 +1,6 @@
 import CoreGraphics
 import DragFrameCore
 import Foundation
-import os
 
 protocol GlobalEventMonitorDelegate: AnyObject {
     func globalEventMonitor(_ monitor: GlobalEventMonitor, received event: MonitoredInputEvent) -> Bool
@@ -25,8 +24,6 @@ enum MonitorDisableReason {
 }
 
 final class GlobalEventMonitor {
-    static let diagnosticLog = Logger(subsystem: "com.vincent.dragframe", category: "monitor")
-
     weak var delegate: GlobalEventMonitorDelegate?
 
     private var eventTap: CFMachPort?
@@ -41,9 +38,6 @@ final class GlobalEventMonitor {
     func start() -> Bool {
         if isRunning { return true }
         stop()
-
-        let preflight = CGPreflightListenEventAccess()
-        Self.diagnosticLog.notice("start(): CGPreflightListenEventAccess=\(preflight, privacy: .public)")
 
         let eventTypes: [CGEventType] = [
             .leftMouseDown,
@@ -64,11 +58,9 @@ final class GlobalEventMonitor {
             callback: globalEventTapCallback,
             userInfo: userInfo
         ) else {
-            Self.diagnosticLog.error("start(): CGEvent.tapCreate(.defaultTap) returned nil (preflight=\(preflight, privacy: .public))")
             return false
         }
 
-        Self.diagnosticLog.notice("start(): active event tap created successfully")
         let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
         eventTap = tap
         runLoopSource = source
