@@ -38,7 +38,7 @@ struct SettingsView: View {
             Spacer(minLength: 0)
         }
         .padding(24)
-        .frame(width: 620, height: 640)
+        .frame(width: 620, height: 700)
     }
 
     private var header: some View {
@@ -154,6 +154,31 @@ struct SettingsView: View {
                     overlayStyleSettings.resetToDefault()
                 }
                 .controlSize(.small)
+            }
+
+            Picker("显示方式", selection: $overlayStyleSettings.overlayMode) {
+                ForEach(OverlayMode.allCases) { mode in
+                    Text(mode.displayName).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            if overlayStyleSettings.overlayMode == .spotlight {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("遮罩浓度")
+                        Spacer()
+                        Text("\(Int((overlayStyleSettings.spotlightOpacity * 100).rounded()))%")
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                    Slider(value: $overlayStyleSettings.spotlightOpacity, in: 0.2...0.85)
+                    Text("框外压暗程度；框内始终保持透明清晰。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(12)
+                .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
             }
 
             Picker("颜色方案", selection: $overlayStyleSettings.selectedPreset) {
