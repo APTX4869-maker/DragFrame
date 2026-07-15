@@ -1,0 +1,72 @@
+name: Build DragFrame
+
+# 触发条件：任何 push，或在 Actions 页面手动点击 "Run workflow"
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    # macOS 26 服务器自带 Xcode 26，满足项目要求
+    runs-on: macos-26
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 显示 Xcode 版本（便于排查）
+        run: xcodebuild -version
+
+      - name: 编译 Release（不签名）
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project DragFrame.xcodeproj \
+            -scheme DragFrame \
+            -configuration Release \
+            -derivedDataPath .build/Release \
+            build \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: 定位 DragFrame.app
+        id: locate
+        run: |
+          set -euo pipefail
+          APP_PATH="$(find .build/Release/Build/Products -maxdepth 3 -name 'DragFrame.app' -type d | head -1)"
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ 未找到 DragFrame.app"; exit 1
+          fi
+          echo "✅ 找到: $APP_PATH"
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Ad-hoc 签名（提升本机可用性）
+        run: |
+          set -euo pipefail
+          APP_PATH="${{ steps.locate.outputs.app_path }}"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --verbose "$APP_PATH" || true
+
+      - name: 打包 DMG
+        run: |
+          set -euo pipefail
+          APP_PATH="${{ steps.locate.outputs.app_path }}"
+          STAGE="$(mktemp -d)/DragFrame"
+          mkdir -p "$STAGE"
+          cp -R "$APP_PATH" "$STAGE/"
+          ln -s /Applications "$STAGE/Applications"
+          hdiutil create -volname "DragFrame" -srcfolder "$STAGE" -ov -format UDZO DragFrame.dmg
+
+      - name: 同时打包一份 zip（备用）
+        run: |
+          set -euo pipefail
+          APP_PATH="${{ steps.locate.outputs.app_path }}"
+          ditto -c -k --keepParent "$APP_PATH" DragFrame-app.zip
+
+      - name: 上传成品
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragFrame
+          path: |
+            DragFrame.dmg
+            DragFrame-app.zip
+          if-no-files-found: error
