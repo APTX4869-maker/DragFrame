@@ -1,14 +1,20 @@
 name: Build DragFrame
 
-# 触发条件：任何 push，或在 Actions 页面手动点击 "Run workflow"
+# 触发条件：任何分支 push、以 v 开头的版本 tag（自动发布 Release）、或手动运行
 on:
   push:
+    branches:
+      - '**'
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
   build:
     # macOS 26 服务器自带 Xcode 26，满足项目要求
     runs-on: macos-26
+    permissions:
+      contents: write  # 推送 v* tag 时需要写权限来创建 Release
 
     steps:
       - name: 检出代码
@@ -70,3 +76,15 @@ jobs:
             DragFrame.dmg
             DragFrame-app.zip
           if-no-files-found: error
+
+      - name: 发布 Release（仅在推送 v* 版本 tag 时自动执行）
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "${GITHUB_REF_NAME}" \
+            DragFrame.dmg DragFrame-app.zip \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "DragFrame ${GITHUB_REF_NAME}" \
+            --generate-notes
